@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,21 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'users'
+
+], function ($router) {
+    $router->get('/', [UsersController::class, 'index']);
+    $router->get('/{userId}', [UsersController::class, 'show']);
+    $router->post('/', [UsersController::class, 'store']);
+    $router->put('{userId}', [UsersController::class, 'update']);
+    $router->delete('{userId}', [UsersController::class, 'destroy']);
+
+});
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
