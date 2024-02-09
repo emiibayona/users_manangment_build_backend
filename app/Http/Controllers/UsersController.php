@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRuleType;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Validator;
+use stdClass;
 
 class UsersController extends Controller
 {
@@ -13,9 +14,8 @@ class UsersController extends Controller
      */
     public function index()
     {
-        //
-        return User::all();
-        // return "HI";
+
+        return response()->json(User::all(), 200);
     }
 
     /**
@@ -25,28 +25,48 @@ class UsersController extends Controller
     {
 
         $input = $request->all();
-        $validator = Validator::make($input, [
-            'name' => 'required|string|max:10'
-        ], $messages = [
-                'required' => 'The :attribute field is required.',
-            ]);
-
-        error_log(json_encode($input));
-        if ($validator->fails()) {
-
-            response()->json($validator, 400);
+        $existUser = User::where('email', $input["email"])->first();
+        if ($existUser) {
+            return response()->json(json_decode('{"error":"Already exist an user with that email"}'), 400);
         }
-        $user = User::create($request->all());
 
-        return response()->json($user, 201);
+        $isValid = User::userIsValid($input, 'create');
+        if (!$isValid->isValid) {
+            return response()->json($isValid, 400);
+        }
+
+        $new_user = User::create($input);
+        return response()->json($new_user, 201);
     }
 
+    static function getUserByKey(string $key, string $value)
+    {
+        $res = new stdClass;
+        $res->error = null;
+        if (!$value) {
+            $res->error = '{"error": "' + $key + ' is required"}';
+            $res->errorCode = 400;
+        }
+
+        $res->value = User::where($key, $value)->first();
+
+        if (!$res->value) {
+            $res->error = '{"error": "User not found"}';
+            $res->errorCode = 404;
+        }
+        return $res;
+    }
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        //
+        $response = $this->getUserByKey("id", $id);
+        if ($response->error) {
+            return response()->json(json_decode($response->error), $response->errorCode);
+        }
+
+        return response()->json($response->value, 200);
     }
 
     /**
@@ -55,6 +75,24 @@ class UsersController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $response = $this->getUserByKey("id", $id);
+        if ($response->error) {
+            return response()->json(json_decode($response->error), $response->errorCode);
+        }
+        $user = $response->value;
+
+        $input = $request->all();
+        $isValid = User::userIsValid($input, 'update');
+        if (!$isValid->isValid) {
+            return response()->json($isValid, 400);
+        }
+
+        foreach (array_keys($input) as $val) {
+            $user[$val] = $input[$val];
+        }
+        $user->save();
+        return response()->json($user, 200);
+
     }
 
     /**

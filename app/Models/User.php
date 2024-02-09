@@ -2,15 +2,22 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\UserRuleType;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Validator;
+use stdClass;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasUuids;
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +28,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'activity',
+        'description',
+        'address'
     ];
 
     /**
@@ -42,4 +53,41 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    static function userIsValid($user, $type)
+    {
+        $validator = Validator::make($user, User::rules($type));
+        $object = new stdClass;
+        $object->isValid = !$validator->fails();
+        $object->errors = $validator->errors();
+        return $object;
+
+    }
+
+    static function rules(string $type = 'create')
+    {
+        $create_rules = [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|max:255',
+            'password' => 'required|string',
+
+        ];
+        $update_rules = [
+            'phone' => 'string|nullable',
+            'activity' => 'string|nullable',
+            'description' => 'string|nullable',
+            'address' => 'string|nullable'
+        ];
+        $delete_rules = [];
+
+        if ($type === 'create') {
+            return [...$create_rules, ...$update_rules];
+        } else if ($type === 'update') {
+            return $update_rules;
+        } else if ($type === 'delete') {
+            return $delete_rules;
+        }
+
+    }
 }
