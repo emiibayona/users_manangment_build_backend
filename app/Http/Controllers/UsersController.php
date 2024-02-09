@@ -100,6 +100,12 @@ class UsersController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $response = $this->getUserByKey("id", $id);
+        if ($response->error) {
+            return response()->json(json_decode($response->error), $response->errorCode);
+        }
+        $user = $response->value;
+        $user->delete();
+        return response()->json($user, 200);
     }
 }
