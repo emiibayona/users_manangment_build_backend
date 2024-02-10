@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,5 +47,15 @@ Route::group([
     $router->post('/login', [AuthController::class, 'login']);
     $router->post('/logout', [AuthController::class, 'logout']);
     $router->post('/refresh', [AuthController::class, 'refresh']);
-    $router->get('/me', [AuthController::class, 'me']);
+    $router->get('/user', [AuthController::class, 'me']);
+});
+
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'contacts'
+], function ($router) {
+    $router->get('/', [ContactController::class, 'list']);
+    $router->post('/', [ContactController::class, 'create']);
+    $router->put('/{contactId}', [ContactController::class, 'update']);
 });

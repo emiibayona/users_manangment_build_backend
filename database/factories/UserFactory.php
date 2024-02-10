@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Contact;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -37,8 +39,25 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (User $user) {
+            Contact::factory(5)->create([
+                'user_id' => $user->id,
+                'name' => fake()->name(),
+                'phone' => fake()->phoneNumber(),
+                'activity' => fake()->jobTitle(),
+                'description' => fake()->paragraph(),
+                'address' => fake()->address(),
+                'email' => fake()->safeEmail(),
+                'profile_picture' => fake()->imageUrl(),
+                'banner_picture' => fake()->imageUrl(1920, 1080),
+            ]);
+        });
     }
 }
