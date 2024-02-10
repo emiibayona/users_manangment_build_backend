@@ -44,8 +44,7 @@ Route::group([
 ], function ($router) {
 
     $router->post('/login', [AuthController::class, 'login']);
-    // Route::post('logout', 'AuthController@logout');
-    // Route::post('refresh', 'AuthController@refresh');
-    // Route::post('me', 'AuthController@me');
-
+    $router->post('/logout', [AuthController::class, 'logout']);
+    $router->post('/refresh', [AuthController::class, 'refresh']);
+    $router->get('/me', [AuthController::class, 'me']);
 });

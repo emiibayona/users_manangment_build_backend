@@ -14,7 +14,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'refresh', 'logout']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     /**
@@ -29,8 +29,8 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
         $credentials = $request->only('email', 'password');
-        var_dump($credentials);
-        $token = Auth::guard('api')->attempt($credentials);
+
+        $token = auth()->attempt($credentials);
         if (!$token) {
             return response()->json([
                 'status' => 'error',
@@ -38,7 +38,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = Auth::guard('api')->user();
+        $user = auth()->user();
         return response()->json([
             'status' => 'success',
             'user' => $user,
@@ -47,7 +47,6 @@ class AuthController extends Controller
                 'type' => 'bearer',
             ]
         ]);
-
     }
 
     /**
@@ -79,7 +78,6 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        // return $this->respondWithToken(auth()->refresh());
         return response()->json([
             'status' => 'success',
             'user' => Auth::user(),
@@ -87,6 +85,15 @@ class AuthController extends Controller
                 'token' => Auth::refresh(),
                 'type' => 'bearer',
             ]
+        ]);
+    }
+
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => 3600 * 60
         ]);
     }
 

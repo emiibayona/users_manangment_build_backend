@@ -5,10 +5,15 @@ namespace App\Http\Controllers;
 use App\Enums\UserRuleType;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use stdClass;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => 'store']);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -100,12 +105,19 @@ class UsersController extends Controller
      */
     public function destroy(string $id)
     {
+
         $response = $this->getUserByKey("id", $id);
+
         if ($response->error) {
             return response()->json(json_decode($response->error), $response->errorCode);
         }
-        $user = $response->value;
-        $user->delete();
-        return response()->json($user, 200);
+
+        if (Auth::user()->$id === $id) {
+            //Info: Role system not present in this version.
+            $user = $response->value;
+            $user->delete();
+            return response()->json($user, 200);
+        } else
+            return response(['error' => 'You cant delete another user'], 400);
     }
 }
