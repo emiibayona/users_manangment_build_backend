@@ -19,8 +19,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-
-        return response()->json(User::all(), 200);
+        return response()->json(User::getAll(), 200);
     }
 
     /**
@@ -35,7 +34,7 @@ class UsersController extends Controller
             return response()->json(json_decode('{"error":"Already exist an user with that email"}'), 400);
         }
 
-        $isValid = User::userIsValid($input, 'create');
+        $isValid = User::userIsValid($input, true);
         if (!$isValid->isValid) {
             return response()->json($isValid, 400);
         }
@@ -44,29 +43,13 @@ class UsersController extends Controller
         return response()->json($new_user, 201);
     }
 
-    static function getUserByKey(string $key, string $value)
-    {
-        $res = new stdClass;
-        $res->error = null;
-        if (!$value) {
-            $res->error = '{"error": "' + $key + ' is required"}';
-            $res->errorCode = 400;
-        }
 
-        $res->value = User::where($key, $value)->first();
-
-        if (!$res->value) {
-            $res->error = '{"error": "User not found"}';
-            $res->errorCode = 404;
-        }
-        return $res;
-    }
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        $response = $this->getUserByKey("id", $id);
+        $response = User::getUserByKey("id", $id);
         if ($response->error) {
             return response()->json(json_decode($response->error), $response->errorCode);
         }
@@ -80,23 +63,19 @@ class UsersController extends Controller
     public function update(Request $request, string $id)
     {
         //
-        $response = $this->getUserByKey("id", $id);
+        $response = User::getUserByKey("id", $id);
         if ($response->error) {
             return response()->json(json_decode($response->error), $response->errorCode);
         }
         $user = $response->value;
 
         $input = $request->all();
-        $isValid = User::userIsValid($input, 'update');
+        $isValid = User::userIsValid($input, false);
         if (!$isValid->isValid) {
             return response()->json($isValid, 400);
         }
 
-        foreach (array_keys($input) as $val) {
-            $user[$val] = $input[$val];
-        }
-        $user->save();
-        return response()->json($user, 200);
+        return response()->json(User::updateUser($user, $input), 200);
 
     }
 
@@ -112,11 +91,9 @@ class UsersController extends Controller
             return response()->json(json_decode($response->error), $response->errorCode);
         }
 
-        if (Auth::user()->$id === $id) {
-            //Info: Role system not present in this version.
-            $user = $response->value;
-            $user->delete();
-            return response()->json($user, 200);
+        if (Auth::user()->id === $id) {
+            //Info: Role system not implemented in this version.
+            return response()->json(User::deleteUser($response->value), 200);
         } else
             return response(['error' => 'You cant delete another user'], 400);
     }
