@@ -13,7 +13,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Validator;
 use stdClass;
 
-class User extends Authenticatable implements JWTSubject 
+class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable, HasUuids;
 
@@ -29,10 +29,6 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'phone',
-        'activity',
-        'description',
-        'address'
     ];
 
     /**
@@ -56,9 +52,9 @@ class User extends Authenticatable implements JWTSubject
     ];
 
 
-    static function userIsValid($user, $type)
+    static function userIsValid($user, $checkPwd)
     {
-        $validator = Validator::make($user, User::rules($type));
+        $validator = Validator::make($user, User::rules($checkPwd));
         $object = new stdClass;
         $object->isValid = !$validator->fails();
         $object->errors = $validator->errors();
@@ -66,32 +62,54 @@ class User extends Authenticatable implements JWTSubject
 
     }
 
-    static function rules(string $type = 'create')
+    static function rules(bool $checkPwd)
     {
-        $create_rules = [
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|max:255',
-            'password' => 'required|string',
-
         ];
-        $update_rules = [
-            'phone' => 'string|nullable',
-            'activity' => 'string|nullable',
-            'description' => 'string|nullable',
-            'address' => 'string|nullable'
-        ];
-        $delete_rules = [];
-
-        if ($type === 'create') {
-            return [...$create_rules, ...$update_rules];
-        } else if ($type === 'update') {
-            return $update_rules;
-        } else if ($type === 'delete') {
-            return $delete_rules;
+        if ($checkPwd) {
+            return [...$rules, 'password' => 'required|string'];
         }
-
+        return $rules;
     }
 
+    static function getAll()
+    {
+        return User::all();
+    }
+    static function getUserByKey(string $key, string $value)
+    {
+        $res = new stdClass;
+        $res->error = null;
+        if (!$value) {
+            $res->error = '{"error": "' + $key + ' is required"}';
+            $res->errorCode = 400;
+        }
+
+        $res->value = User::where($key, $value)->first();
+
+        if (!$res->value) {
+            $res->error = '{"error": "User not found"}';
+            $res->errorCode = 404;
+        }
+        return $res;
+    }
+
+    static function updateUser($user, $input)
+    {
+        foreach (array_keys($input) as $val) {
+            $user[$val] = $input[$val];
+        }
+        $user->save();
+        return $user;
+    }
+
+    static function deleteUser($user)
+    {
+        $user->delete();
+        return $user;
+    }
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
