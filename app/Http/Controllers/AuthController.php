@@ -45,6 +45,7 @@ class AuthController extends Controller
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
+                'get_time'=> now(),
                 'ttl' => env('JWT_TTL')
             ]
         ]);
@@ -85,6 +86,7 @@ class AuthController extends Controller
             'authorisation' => [
                 'token' => Auth::refresh(),
                 'type' => 'bearer',
+                'get_time'=> now(),
                 'ttl' => env('JWT_TTL')
             ]
         ]);
