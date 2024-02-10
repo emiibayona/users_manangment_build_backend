@@ -96,22 +96,4 @@ class AuthController extends Controller
             'expires_in' => 3600 * 60
         ]);
     }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *F
-     * @return \Illuminate\Http\JsonResponse
-     */
-    // protected function respondWithToken($token)
-    // {
-    //     return response()->json([
-    //         'token' => $token,
-    //         'token_type' => 'bearer',
-    //         'expires_in' => auth('api')->factory()->getTTL() * 60
-    //     ], 200, [
-    //         'Authorization' => $token
-    //     ]);
-    // }
 }
