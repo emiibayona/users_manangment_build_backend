@@ -45,6 +45,7 @@ class AuthController extends Controller
             'authorisation' => [
                 'token' => $token,
                 'type' => 'bearer',
+                'ttl' => env('JWT_TTL')
             ]
         ]);
     }
@@ -84,16 +85,8 @@ class AuthController extends Controller
             'authorisation' => [
                 'token' => Auth::refresh(),
                 'type' => 'bearer',
+                'ttl' => env('JWT_TTL')
             ]
-        ]);
-    }
-
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => 3600 * 60
         ]);
     }
 }
