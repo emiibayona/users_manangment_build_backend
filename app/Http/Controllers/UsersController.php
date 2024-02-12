@@ -12,7 +12,7 @@ class UsersController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => 'store']);
+        $this->middleware('auth:api', ['except' => 'store', 'index']);
     }
     /**
      * Display a listing of the resource.

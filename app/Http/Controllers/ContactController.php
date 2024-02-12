@@ -14,10 +14,10 @@ class ContactController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function list()
+    public function list(Request $request)
     {
-
-        return response()->json(Contact::getContactsFromUser(Auth::user()->id), 200);
+        $filter = $request->query('filter');
+        return response()->json(Contact::getContactsFromUser(Auth::user()->id, $filter), 200);
     }
 
     public function create(Request $request)

@@ -40,12 +40,12 @@ class Contact extends Model
         ];
     }
 
-    static function getContactsFromUser($userId)
+    static function getContactsFromUser($userId, $filter)
     {
         if (!$userId)
             return [];
 
-        return Contact::where('user_id', $userId)->paginate(12);
+        return Contact::where('user_id', $userId)->where('name', 'like', '%' . $filter . '%')->paginate(12);
     }
     static function contactIsValid($contact)
     {
