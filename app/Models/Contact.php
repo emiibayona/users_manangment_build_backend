@@ -45,7 +45,7 @@ class Contact extends Model
         if (!$userId)
             return [];
 
-        return Contact::where('user_id', $userId)->where('name', 'like', '%' . $filter . '%')->paginate(12);
+        return Contact::where('user_id', $userId)->where('name', 'like', '%' . $filter . '%')->paginate(9);
     }
     static function contactIsValid($contact)
     {
