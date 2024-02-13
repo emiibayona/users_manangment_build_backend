@@ -20,14 +20,14 @@ class DatabaseSeeder extends Seeder
         User::factory(10)->create();
 
         User::factory()->create([
-            'name' => 'Juan User',
-            'email' => 'juan@default.com',
+            'name' => 'Juan Build',
+            'email' => 'juan@build.com',
             'password' => $password_default
         ]);
 
         User::factory()->create([
-            'name' => 'Eitan User',
-            'email' => 'eitan@default.com',
+            'name' => 'Eitan Build',
+            'email' => 'eitan@build.com',
             'password' => $password_default
         ]);
     }
