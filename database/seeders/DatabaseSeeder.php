@@ -26,8 +26,33 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory()->create([
+            'name' => 'Juan Build',
+            'email' => 'juan.empty@build.com',
+            'password' => $password_default
+        ]);
+
+
+        User::factory()->create([
             'name' => 'Eitan Build',
             'email' => 'eitan@build.com',
+            'password' => $password_default
+        ]);
+
+        User::factory()->create([
+            'name' => 'Eitan Build',
+            'email' => 'eitan.empty@build.com',
+            'password' => $password_default
+        ]);
+
+        User::factory()->create([
+            'name' => 'Colomardo',
+            'email' => 'emii.bayona@gmail.com',
+            'password' => $password_default
+        ]);
+
+        User::factory()->create([
+            'name' => 'Colomardo',
+            'email' => 'emii.bayona.empty@gmail.com',
             'password' => $password_default
         ]);
     }

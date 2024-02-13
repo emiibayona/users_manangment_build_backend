@@ -47,17 +47,19 @@ class UserFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (User $user) {
-            Contact::factory(5)->create([
-                'user_id' => $user->id,
-                'name' => fake()->name(),
-                'phone' => fake()->phoneNumber(),
-                'title' => fake()->jobTitle(),
-                'description' => fake()->paragraph(),
-                'address' => fake()->address(),
-                'email' => fake()->safeEmail(),
-                'profile_picture' => fake()->imageUrl(),
-                'banner_picture' => fake()->imageUrl(1920, 1080),
-            ]);
+            if (!str_contains($user->email, "empty")) {
+                Contact::factory(5)->create([
+                    'user_id' => $user->id,
+                    'name' => fake()->name(),
+                    'phone' => fake()->phoneNumber(),
+                    'title' => fake()->jobTitle(),
+                    'description' => fake()->paragraph(),
+                    'address' => fake()->address(),
+                    'email' => fake()->safeEmail(),
+                    'profile_picture' => fake()->imageUrl(),
+                    'banner_picture' => fake()->imageUrl(1920, 1080),
+                ]);
+            }
         });
     }
 }
