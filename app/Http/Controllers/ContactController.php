@@ -16,8 +16,16 @@ class ContactController extends Controller
 
     public function list(Request $request)
     {
-        $filter = $request->query('filter');
-        return response()->json(Contact::getContactsFromUser(Auth::user()->id, $filter), 200);
+
+        $value = $request->query('filter');
+        $id = $request->query('id');
+        $column = 'name';
+
+        if ($id) {
+            $column = 'id';
+            $value = $id;
+        }
+        return response()->json(Contact::getContactsFromUser(Auth::user()->id, $column, $value), 200);
     }
 
     public function create(Request $request)
