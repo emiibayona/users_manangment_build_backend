@@ -47,9 +47,7 @@ class ContactController extends Controller
             return response()->json($isValid, 400);
         }
 
-        //TODO: Move to Contact model
-        //TODO:: check if contact is not contact for user logged-in
-        $contact = Contact::find($id);
+        $contact = Contact::getContactById($id);
 
         $res = Contact::updateContact($contact, $input);
         return response()->json($res, 200);

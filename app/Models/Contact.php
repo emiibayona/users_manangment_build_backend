@@ -52,6 +52,11 @@ class Contact extends Model
 
         return Contact::where('user_id', $userId)->where($column, 'like', '%' . $value . '%')->paginate(9);
     }
+
+    static function getContactById($id)
+    {
+        return Contact::where('id', $id)->first();
+    }
     static function contactIsValid($contact)
     {
         $validator = Validator::make($contact, Contact::rules());
@@ -65,8 +70,6 @@ class Contact extends Model
     {
         $contact['user_id'] = $user->id;
         return Contact::create($contact);
-        // error_log(json_decode($new_contact)->id);
-        // return Contact::where('id', json_decode($new_contact)->id);
     }
 
     static function updateContact($contact, $data)
