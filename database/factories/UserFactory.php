@@ -51,7 +51,7 @@ class UserFactory extends Factory
                 'user_id' => $user->id,
                 'name' => fake()->name(),
                 'phone' => fake()->phoneNumber(),
-                'activity' => fake()->jobTitle(),
+                'title' => fake()->jobTitle(),
                 'description' => fake()->paragraph(),
                 'address' => fake()->address(),
                 'email' => fake()->safeEmail(),

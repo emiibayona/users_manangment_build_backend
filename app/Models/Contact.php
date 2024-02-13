@@ -17,7 +17,7 @@ class Contact extends Model
     protected $fillable = [
         'name',
         'phone',
-        'activity',
+        'title',
         'description',
         'address',
         'email',
@@ -25,13 +25,18 @@ class Contact extends Model
         'banner_picture',
         'user_id'
     ];
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
 
     static function rules()
     {
         return [
             'name' => 'string',
             'phone' => 'string|nullable',
-            'activity' => 'string|nullable',
+            'title' => 'string|nullable',
             'description' => 'string|nullable',
             'address' => 'string|nullable',
             'email' => 'string|nullable',
@@ -59,8 +64,9 @@ class Contact extends Model
     static function createAndSyncContact($contact, $user)
     {
         $contact['user_id'] = $user->id;
-        $new_contact = Contact::create($contact);
-        return $new_contact;
+        return Contact::create($contact);
+        // error_log(json_decode($new_contact)->id);
+        // return Contact::where('id', json_decode($new_contact)->id);
     }
 
     static function updateContact($contact, $data)
